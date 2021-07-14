@@ -252,9 +252,10 @@ class ImpSearch():
         '''
         max_depth = [self.best_max_depth]
         n_estimators = self.n_estimators
-        self.get_best_max_depth(year=year, 
+        df = self.get_best_max_depth(year=year, 
                                 n_estimators=n_estimators, 
                                 max_depth=max_depth)
+        return df
         
 if __name__ == "__main__":
     imp = ImpSearch()
