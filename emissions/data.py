@@ -89,10 +89,6 @@ def clean_data(df):
     df = df.loc[~(df.groupby('VIN')['TEST_SDATE'].diff() < np.timedelta64(90, 'D'))]
     print(colored(f'\nRecords after keeping only the earliest test within a month for each vehicle: {df.shape[0]}', 'red'))
     
-    # engineer AFTER_COVID feature
-    df['AFTER_COVID'] = df.TEST_SDATE.dt.year >= 2020
-    print('\nRecords where AFTER_COVID is True:', df[df.AFTER_COVID==1].shape[0])
-    
     # drop 0s in ODOMETER and remove 9999999 and 8888888
     print('\nRecords where ODOMETER = 0:', df[df.ODOMETER==0].shape[0])
     df = df[(df.ODOMETER!=0) & (df.ODOMETER!=8888888) & (df.ODOMETER!=9999999)]
@@ -106,9 +102,6 @@ def clean_data(df):
 
     # engineer ENGINE_WEIGHT_RATIO
     df['ENGINE_WEIGHT_RATIO'] = np.round(df['ENGINE_SIZE']/df['GVWR'], 2)
-    # use ENGINE_WEIGHT_RATIO to identify sports cars
-    df['SPORT'] = df['ENGINE_WEIGHT_RATIO'] > 2
-    df["SPORT"] = df["SPORT"].astype(int)
       
     #set make to string and to lower case, strip trailing and internal whitespace
     df['MAKE'] = df['MAKE'].astype('string').str.strip().str.lower().str.replace(' ', '')
@@ -126,9 +119,7 @@ def clean_data(df):
             'VIN', # will drop this later
             'MAKE',
             'ENGINE_WEIGHT_RATIO',
-            'SPORT',
-            'TEST_SDATE',
-            'AFTER_COVID'
+            'TEST_SDATE'
             ]
     df = df[cols].copy()
     
@@ -145,7 +136,6 @@ def clean_data(df):
     print(colored(f"Unique vehicles in Pass: {df[df.RESULT==0].VIN.nunique()}",'blue'))
     # drop VIN
     df = df.drop(columns=['VIN'])
-    print(df.columns.values)
     return df
 
 def split(df=None, test_size=0.2):
